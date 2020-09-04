@@ -1,4 +1,5 @@
 import pygame
+import player
 from network import Network
 from pickle import dumps, loads
 width, height = 500, 500
