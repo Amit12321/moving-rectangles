@@ -29,16 +29,13 @@ class Network:
     
     def send(self, data):
         try:
-            print(f"[CLIENT] Sending {data} which is {dumps(data)}")
             self.client.send(dumps(data))
             buf = b''
             while len(buf) < 4:
                 buf += self.client.recv(4 - len(buf))
             length = struct.unpack('!I', buf)[0]
-            print("[CLIENT] Length of packet sent back is: ", length)
             sent = self.client.recv(length)
             sent = loads(sent)
-            print("[CLIENT] Message recieved: ", sent)
             return sent
         except socket.error as e:
             print(e)
