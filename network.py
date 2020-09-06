@@ -1,10 +1,12 @@
 import socket
 from pickle import dumps, loads
+import struct
 
 class Network:
+    LENGTH = 4096
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server = "192.168.1.36"
+        self.server = "192.168.1.33"
         self.port = 8820
         self.addr = (self.server, self.port)
         self.player = None
@@ -27,8 +29,17 @@ class Network:
     
     def send(self, data):
         try:
+            print(f"[CLIENT] Sending {data} which is {dumps(data)}")
             self.client.send(dumps(data))
-            return loads(self.client.recv(4096*4))
+            buf = b''
+            while len(buf) < 4:
+                buf += self.client.recv(4 - len(buf))
+            length = struct.unpack('!I', buf)[0]
+            print("[CLIENT] Length of packet sent back is: ", length)
+            sent = self.client.recv(length)
+            sent = loads(sent)
+            print("[CLIENT] Message recieved: ", sent)
+            return sent
         except socket.error as e:
             print(e)
 

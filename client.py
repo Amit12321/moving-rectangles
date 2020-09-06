@@ -7,11 +7,10 @@ width, height = 500, 500
 window = pygame.display.set_mode((width,height))
 pygame.display.set_caption("Client") 
 
-def redraw(window, player, other_players):
+def redraw(window, players):
     window.fill( (255, 255, 255) )
-    for p in other_players:
+    for p in players.values():
         p.draw(window)
-    player.draw(window)
     pygame.display.update()
 
 def main():
@@ -22,19 +21,21 @@ def main():
     n.set_player(n.send(color))
     
     myself = n.get_player()
+    print("[CLIENT] Recieved player: ", myself)
     clock = pygame.time.Clock()
     other_players = []
     while run:
         clock.tick(60)
-        
+        print("[CLIENT] Starts new loop")
         other_players = n.send(myself)
+        print("[CLIENT] Recieved other players: ", other_players)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
             
         myself.move()
-        redraw(window, myself, other_players)
+        redraw(window, other_players)
 
 main()
 pygame.quit()        
